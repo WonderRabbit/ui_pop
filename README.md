@@ -1,27 +1,17 @@
 # ui_pop
 
-`ui-pop`은 레거시 프런트엔드 화면에서 소스 우선 UI 와이어프레임과 디자인 명세 산출물을 생성하는 Node.js CLI입니다.
+`ui_pop`은 UI 관련 도구와 문서를 쌓아가기 위한 초기 저장소입니다.
 
-## 명령
+## 현재 상태
 
-```bash
-npm install
-npm run build
-node dist/cli.js --help
-node dist/cli.js doctor
-node dist/cli.js analyze-source --help
-```
+추적된 브랜치는 아직 애플리케이션 코드나 빌드 설정을 포함하지 않습니다. 지금은 저장소 지침과 기본 프로젝트 문서를 먼저 정리한 상태입니다.
 
-Wave 0 CLI 표면은 의도적으로 작게 유지합니다. 소스 추출, UI IR 생성, 와이어프레임 렌더링, 런타임 검증은 이후 구현 웨이브에서 추가됩니다.
-
-## 개발
+## 확인 명령
 
 ```bash
-npm run build
-npm run typecheck
-npm test
-npm run lint
-npm run format:check
+git status --short
+git diff -- AGENTS.md README.md
+git log --oneline -n 5
 ```
 
-이 CLI는 Node.js 22 이상을 대상으로 하며 PowerShell, bash, zsh에서 실행되도록 설계되었습니다.
+구현 코드, 패키지 설정, 테스트 도구가 커밋되면 이 README에 설치, 빌드, 테스트, 실행 명령을 함께 추가합니다.
