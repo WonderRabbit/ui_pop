@@ -1,17 +1,153 @@
-# ui_pop
+# ui-pop
 
-`ui_pop`은 UI 관련 도구와 문서를 쌓아가기 위한 초기 저장소입니다.
+`ui-pop` is a Node/TypeScript CLI for turning a React or Next.js TSX screen into
+source-backed UI definition artifacts and a simple editable HTML wireframe.
 
-## 현재 상태
+The current MVP is intentionally narrow: it extracts static facts from TSX,
+creates Markdown and HTML artifacts, and can validate those facts against a
+local Playwright runtime page.
 
-추적된 브랜치는 아직 애플리케이션 코드나 빌드 설정을 포함하지 않습니다. 지금은 저장소 지침과 기본 프로젝트 문서를 먼저 정리한 상태입니다.
+## Requirements
 
-## 확인 명령
+- Node.js 22 or newer.
+- npm.
+- Playwright Chromium installed for runtime validation.
+
+Install dependencies:
 
 ```bash
-git status --short
-git diff -- AGENTS.md README.md
-git log --oneline -n 5
+npm install
+npx playwright install chromium
 ```
 
-구현 코드, 패키지 설정, 테스트 도구가 커밋되면 이 README에 설치, 빌드, 테스트, 실행 명령을 함께 추가합니다.
+## Supported Workflow
+
+Build the CLI:
+
+```bash
+npm run build
+```
+
+Create a source-backed spec directory:
+
+```bash
+node dist/cli.js analyze-source \
+  --entry tests/fixtures/next-app/app/orders/page.tsx \
+  --out .omo/evidence/task-11-spec \
+  --force
+```
+
+Generate the Markdown UI definition:
+
+```bash
+node dist/cli.js draft .omo/evidence/task-11-spec --force
+```
+
+Generate the HTML wireframe:
+
+```bash
+node dist/cli.js render-wireframe .omo/evidence/task-11-spec --force
+```
+
+Start the local runtime fixture:
+
+```bash
+npm run fixture:runtime -- --port 4173
+```
+
+Validate runtime facts against the fixture:
+
+```bash
+node dist/cli.js validate-runtime \
+  .omo/evidence/task-11-spec \
+  --url http://127.0.0.1:4173/orders
+```
+
+Run the end-to-end smoke flow:
+
+```bash
+npm run smoke
+```
+
+Run the full project gate:
+
+```bash
+npm run check
+```
+
+## Output Artifacts
+
+`analyze-source` writes these files to the spec directory:
+
+- `manifest.json`: generation metadata and source entry summary.
+- `ui-ir.json`: structured screen, query condition, action, and result facts.
+- `source-graph.json`: bounded source graph used for extraction.
+- `source-evidence.json`: sanitized source evidence summary.
+
+`draft` adds:
+
+- `ui.md`: editable Markdown UI definition table.
+
+`render-wireframe` adds:
+
+- `wireframe.html`: deterministic editable HTML wireframe.
+
+`validate-runtime` adds:
+
+- `runtime-evidence.json`: matched, unresolved, and mismatched runtime fact
+  evidence for the validated URL.
+
+## Runtime Fixture
+
+The fixture server is for local validation and smoke tests:
+
+```bash
+npm run fixture:runtime -- --port 4173
+```
+
+It serves:
+
+- `http://127.0.0.1:4173/orders`: matching runtime page.
+- `http://127.0.0.1:4173/missing-label`: one missing label for unresolved
+  evidence.
+- `http://127.0.0.1:4173/mismatch`: intentionally mismatched screen and facts.
+
+## Validation Behavior
+
+`validate-runtime` reads `ui-ir.json`, opens the supplied URL with Playwright,
+and compares visible body text with the static UI facts.
+
+- Matching query, action, and result facts are upgraded to
+  `runtime-confirmed` and receive a runtime source entry.
+- Missing non-screen facts are recorded as `unresolved`.
+- A missing screen title is recorded as `mismatched`.
+- Missing or malformed `ui-ir.json` fails without writing
+  `runtime-evidence.json`.
+- Runtime mismatch exits with code `3` and still writes
+  `runtime-evidence.json`.
+
+## Current Limitations
+
+This MVP currently supports React or Next.js `.tsx` screen entries and local
+Playwright validation only.
+
+It does not currently provide:
+
+- PPTX or slide deck export.
+- Figma export or import.
+- AI-assisted extraction.
+- Vue, Svelte, or Angular source extraction.
+- Production website crawling.
+
+The generated `wireframe.html` is an editable HTML artifact, not a full design
+tool document.
+
+## Future Direction
+
+The intended next path is browser capture and editable deck export:
+
+- capture richer runtime layout and screenshots from a real app route;
+- merge source facts, runtime evidence, and screenshots into a UI definition;
+- export an editable deck or document format from that verified evidence.
+
+Those items are future work, not current functionality.

@@ -1,0 +1,41 @@
+{
+  "name": "ui-pop",
+  "version": "0.1.0",
+  "description": "Source-first UI wireframe and design-spec generator for legacy frontend screens.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "ui-pop": "./dist/cli.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "fixture:runtime": "node scripts/fixture-runtime.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "biome lint AGENTS.md README.md package.json package-lock.json tsconfig.json tsup.config.ts biome.json src scripts tests",
+    "format": "biome check AGENTS.md README.md package.json package-lock.json tsconfig.json tsup.config.ts biome.json src scripts tests",
+    "format:check": "biome check AGENTS.md README.md package.json package-lock.json tsconfig.json tsup.config.ts biome.json src scripts tests",
+    "format:write": "biome check --write AGENTS.md README.md package.json package-lock.json tsconfig.json tsup.config.ts biome.json src scripts tests",
+    "check": "npm run typecheck && npm test && npm run lint && npm run format:check && npm run build"
+  },
+  "dependencies": {
+    "ts-morph": "^27.0.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.7",
+    "@types/node": "^24.10.2",
+    "@playwright/test": "^1.57.0",
+    "playwright": "^1.57.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}
